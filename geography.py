@@ -13,6 +13,7 @@ class Map:
         self.country = Country([], regionHoppingProbas)
         self.listOfPeople = []
         self.familySizeGenerator = familySizeGenerator()
+        self.adultAgeCategoryGenerator, self.adultAgeCategoryBoundaries = adultAgeCategoryGenerator()
         
         #create sub structure of the country
         regionsTemp  = [Region([], self.country, citiesHoppingProbas) for i in range(nbRegions)]
@@ -35,9 +36,10 @@ class Map:
                         countmember = 1
                         for mem in members:
                             if i<3:
-                                mem.age = ageGenerator("adult")
+                                ageCategory = self.adultAgeCategoryGenerator()
+                                mem.age = numpy.random.randint(*self.adultAgeCategoryBoundaries[ageCategory]) #the little star unpacks the tuple
                             if i>=3:
-                                mem.age = ageGenerator("kid")
+                                mem.age = numpy.random.randint(1, 19)
                             self.listOfPeople.append(mem)
                             countmember = countmember + 1
 
@@ -221,7 +223,6 @@ class Map:
                 iCit +=1
             iReg +=1
     
-    
 
 class Country:
     def __init__(self, regions, hopping_probas):
@@ -329,11 +330,16 @@ def familySizeGenerator():
 
     return familySizeGenerator
 
-def ageGenerator(type):
-    # a continuer
+
+
+def adultAgeCategoryGenerator():
     # from https://www.bfs.admin.ch/bfs/fr/home/statistiques/population/effectif-evolution/age-etat-civil-nationalite.html# We imagine that families are either composed of one adult or 2 adults or 2 adults + 3 kids. We ignore bigger families and adults flatsharing
-    if type == "adult":
-        return familySize = numpy.arange(6)
-    return age
+    ageCategory = numpy.arange(4) #corresponds to 20-39, 40-64, 65-79, 80-100
+    categoryBoundaries = [(20, 39), (40, 64), (65, 79), (80, 100)]
+    ageCategoryProba = numpy.array([23.5, 34.6, 15.7, 6.3])
+    ageCategoryProba = ageCategoryProba * 1/ageCategoryProba.sum()
+    ageCategoryGenerator = rv_discrete(name='ageCategoryGenerator', values=(ageCategory, ageCategoryProba))
+
+    return ageCategoryGenerator, categoryBoundaries
 
 # s'imaginer à un output
