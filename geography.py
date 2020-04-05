@@ -325,7 +325,7 @@ def familySizeGenerator():
     # from https: // www.bfs.admin.ch / bfs / fr / home / statistiques / population / effectif - evolution / menages.html
     # We imagine that families are either composed of one adult or 2 adults or 2 adults + 3 kids. We ignore bigger families and adults flatsharing
     familySize = numpy.arange(6)
-    familySizeProba = numpy.array([0, 0.36, 0.33, 0.13, 0.13, 0.6])
+    familySizeProba = numpy.array([0, 0.35, 0.33, 0.13, 0.13, 0.06])
     familySizeGenerator = rv_discrete(name='familySizeGenerator', values=(familySize, familySizeProba))
 
     return familySizeGenerator
