@@ -4,7 +4,7 @@ from individual import *
 
 class Map:
 
-    def __init__(self, nbRegions, AvgCities, StdCities, AvgQuartiers, StdQuartiers, AvgFamily, StdFamily, minFamilySize, maxFamilySize, regionHoppingProbas, citiesHoppingProbas, districtHoppingProbas, clusterHoppingProbas, supermaketBypeople, publicPlacesbypeople):
+    def __init__(self, nbRegions, AvgCities, StdCities, AvgQuartiers, StdQuartiers, AvgFamily, StdFamily, minFamilySize, maxFamilySize, regionHoppingProbas, citiesHoppingProbas, districtHoppingProbas, clusterHoppingProbas,workingPlacesRatios, workingPlacesSizes, workPlacesParameters, supermaketBypeople, publicPlacesbypeople):
         
         self.nbRegions = nbRegions
         
@@ -12,8 +12,8 @@ class Map:
         self.listOfPeople = []
         
         #create sub structure of the country
-        regions  = [Region([],self.country, citiesHoppingProbas) for i in range(nbRegions)]
-        for reg in regions:
+        regionsTemp  = [Region([],self.country, citiesHoppingProbas) for i in range(nbRegions)]
+        for reg in regionsTemp:
             nbcities = int(round(abs(numpy.random.normal(AvgCities, StdCities))))
             citiesTemp = [City([],reg,districtHoppingProbas) for i in range(nbcities)]
             for cit in citiesTemp:
@@ -25,22 +25,23 @@ class Map:
                     FamilyTemp = [Family([],dis,[]) for i in range(nbfamilies)]
                     for fam in FamilyTemp:
                         nbpeople = numpy.random.randint(minFamilySize, maxFamilySize)
-                        members = [Individual(fam, None, None, fam, []) for i in range(nbpeople)] #give a family and set at home
+                        members = [Individual(fam, None, None, fam, [], []) for i in range(nbpeople)] #give a family and set at home
                         fam.addHomeIndividual(members)
-                        self.listOfPeople.append(members)
-                    dis.addCluster(FamilyTemp)
+                        for mem in members:
+                            self.listOfPeople.append(mem)
+                    dis.addFamily(FamilyTemp)
                 cit.addDistrict(districtsTemp)
             reg.addCity(citiesTemp)
-        country.addRegion(regions)
+        self.country.addRegion(regionsTemp)
         #TODO put family parameters
         #TODO, choose family size distribution
         #TODO, initialize people with datas
         #donner des ages aux personnes
         
-        defineWorkingPlaces(self.country, workPlacesRatios, workPlacesSizes, workPlacesParameters)
+        self.defineWorkingPlaces(self.country, workingPlacesRatios, workingPlacesSizes, workPlacesParameters)
         
-        self.addPublics("SuperMarket", supermaketBypeople, SuperMarketParameters)
-        self.addPublics("Public", supermaketBypeople, PublicPlacesParameters)
+        '''self.addPublics("SuperMarket", supermaketBypeople, SuperMarketParameters)
+        self.addPublics("Public", supermaketBypeople, PublicPlacesParameters)'''
 
         
         
@@ -58,7 +59,7 @@ class Map:
         
         
         
-    def defineWorkingPlaces(country, ratios, sizes, parameters):
+    def defineWorkingPlaces(self, country, ratios, sizes, parameters):
         #define 4 levels of working places, with different sizes (s1-s4)
         #with different ratio of population that can find a place in theses working places
         # level 1: r1 fraction of the population of the country have job here, the size is ~s1, check here how many of these we need. 
@@ -66,37 +67,36 @@ class Map:
         # level 3: r3 fraction of the population of each city have job here, the size is ~s3, check here how many of these we need. 
         # level 4: the size is ~s4, check here how many of these we need in each district to fill the working places
         
-        nbPopulation = country.getPopulationSize()
+        nbPopulation = Individual.counter
         listOfPeopleTemp = self.listOfPeople
         remainingPlaces = nbPopulation #counter
         #1 
-        N1 = int(round(nbPopulation*ratios.r1/sizes.s1)) #number of groups in category 1
-        Size1 = int(round(nbPopulation*ratios.r1/N1))
+        N1 = int(round(nbPopulation*ratios['r1']/sizes['s1'])) #number of groups in category 1
+        Size1 = int(round(nbPopulation*ratios['r1']/N1))
         for i in range(N1):
-            District = chooseDistrict()
-            work = Work([],parameters, Size1)
-            District.addCluster(work)
-            emps, listOfPeopleTemp = chooseEmployee(work, Size1, listOfPeopleTemp)
+            District = self.chooseDistrict()
+            work = Work([],District,parameters, Size1)
+            emps, listOfPeopleTemp = self.chooseEmployee(work, Size1, listOfPeopleTemp)
             work.addEmployees(emps)
         remainingPlaces -= N1*S1
         
         #2
-        N2 = int(round(nbPopulation*ratios.r2/sizes.s2)) #number of groups in category 2
-        Size2 = int(round(nbPopulation*ratios.r2/N2))
+        N2 = int(round(nbPopulation*ratios['r2']/sizes['s2'])) #number of groups in category 2
+        Size2 = int(round(nbPopulation*ratios['r2']/N2))
         for i in range(N2):
-            work = Work([],parameters, Size2)
+            work = Work([],District,parameters, Size2)
             District.addCluster(work)
-            emps, listOfPeopleTemp = chooseEmployee(work, Size2, listOfPeopleTemp)
+            emps, listOfPeopleTemp = self.chooseEmployee(work, Size2, listOfPeopleTemp)
             work.addEmployees(emps)
         remainingPlaces -= N2*S2
         
         #3
-        N3 = int(round(nbPopulation*ratios.r3/sizes.s3)) #number of groups in category 3
-        Size3 = int(round(nbPopulation*ratios.r3/N3))
+        N3 = int(round(nbPopulation*ratios['r3']/sizes['s1'])) #number of groups in category 3
+        Size3 = int(round(nbPopulation*ratios['r3']/N3))
         for i in range(N3):
-            work = Work([],parameters, Size3)
+            work = Work([],District,parameters, Size3)
             District.addCluster(work)
-            emps, listOfPeopleTemp = chooseEmployee(work, Size3, listOfPeopleTemp)
+            emps, listOfPeopleTemp = self.chooseEmployee(work, Size3, listOfPeopleTemp)
             work.addEmployees(emps)
         remainingPlaces -= N3*S3
         
@@ -104,49 +104,52 @@ class Map:
         remainingPlaces = nbPopulation-workingPlaces
         N4 = int(remainingPlaces/sizes.s4) #min number of groups in category 4
         for i in range(N4):
-            work = Work([],parameters, Size4)
+            work = Work([],District,parameters, Size4)
             District.addCluster(work)
-            emps, listOfPeopleTemp = chooseEmployee(work, Size4, listOfPeopleTemp)
+            emps, listOfPeopleTemp = self.chooseEmployee(work, Size4, listOfPeopleTemp)
             work.addEmployees(emps)
         remainingPlaces -= N4*S4
         #for remainning nbpeople
         District = chooseDistrict()
-        work = Work([],parameters, remainingPlaces)
+        work = Work([],District,parameters, remainingPlaces)
         District.addCluster(work)
-        emps, listOfPeopleTemp = chooseEmployee(work, remainingPlaces, listOfPeopleTemp)
+        emps, listOfPeopleTemp = self.chooseEmployee(work, remainingPlaces, listOfPeopleTemp)
         work.addEmployees(emps)
         
     
-    def getClusterDistance(cluster1, cluster2):
+    def getClusterDistance(self,cluster1, cluster2):
         #distance is defined as the number of level we need to go up, same cluster : distance = 0
         
         if cluster1 == cluster2:
-            distance =0
+            return 0
         elif cluster1.district == cluster2.district:
-            distance = 1
+            return 1
         elif cluster1.district.city == cluster2.district.city:
-            distance = 2
+            return 2
         elif cluster1.district.city.region == cluster2.district.city.region:
-            distance = 3
+            return 3
         else:
-            distance = 4
+            return 4
             
-    def chooseEmployee(Work, N, ListOfCandidates):
+            
+    def chooseEmployee(self, Work, N, ListOfCandidates):
         #Work: the working place
         #N: number of work
-        distances = [getClusterDistance(Work, ListOfCandidates[i].home) for i in range(len(ListOfCandidates))]
+        distances = [self.getClusterDistance(Work, ListOfCandidates[i].home) for i in range(len(ListOfCandidates))]
         weights = numpy.divide(1.0,distances)
         probas = numpy.divide(weights, numpy.sum(weights))
         indexesDisponible = numpy.arange(len(ListOfCandidates))
         chosenIndexes = []
         
-        for i in range(N):
-            ind = numpy.random.choice(indexesDisponible,probas)
-            chosenIndexes.append(ind)
-            
-            indexesDisponible.pop(ind)
-            probas.pop(ind)
-            probas = numpy.divide(probas, numpy.sum(probas))
+        '''for i in range(N):
+            for j in range(len(ListOfCandidates))
+                ind = numpy.random.choice(indexesDisponible,probas)
+                chosenIndexes.append(ind)
+                
+                indexesDisponible.pop(ind)
+                probas.pop(ind)
+                probas = numpy.divide(probas, numpy.sum(probas))'''
+        #TBD
         
         remainingCanditates = ListOfCandidates
         for index in sorted(chosenIndexes, reverse=True):
@@ -157,8 +160,6 @@ class Map:
 
         
         
-    def getPopulationSize():
-        return Individual.__counter
         
     def chooseDistrict(self):
         #choose recursively a regions->city->district
@@ -183,8 +184,8 @@ class Country:
         self.hopping_probas = hopping_probas
         
     def addRegion(self, listofRegion):
-        self.regions.append(listofRegion)
         for el in listofRegion:
+            self.regions.append(el)
             el.country = self  
             
     def getRegions(self):
@@ -207,8 +208,8 @@ class Region:
         self.hopping_probas = hopping_probas
         
     def addCity(self, listofCities):
-        self.cities.append(listofCities)
         for el in listofCities:
+            self.cities.append(el)
             el.region = self
             
     def getCities(self):
@@ -231,8 +232,8 @@ class City:
         self.hopping_probas = hopping_probas
     
     def addDistrict(self, listofDistricts):
-        self.districts.append(listofDistricts)
         for el in listofDistricts:
+            self.districts.append(el)
             el.city = self
             
     def getDistricts(self):
@@ -249,19 +250,20 @@ class City:
 
         
 class District:
-    def __init__(self, family, work, superMarket, puplicPlaces, city, hopping_probas):
-        self.family = family
+    def __init__(self, families, work, superMarkets, puplicPlaces, city, hopping_probas):
+        self.families = families
         self.work = work
-        self.superMarket = superMarket
+        self.superMarkets = superMarkets
         self.publicPlaces = puplicPlaces
         
         self.city = city
         self.hopping_probas = hopping_probas #est-ce vraiment utile ?
 
-    def addCluster(self, listofClusters):
-        self.clusters.append(listofClusters)
-        for el in listofClusters:
+    def addFamily(self, listOfFamilies):
+        for el in listOfFamilies:
+            self.families.append(el)
             el.district = self
+
         
     def update(self):
         for el in self.clusters:

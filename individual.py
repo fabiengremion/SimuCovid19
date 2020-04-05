@@ -2,12 +2,12 @@ import activities
 
 class Individual:
 
-    __counter = 0 #counts the number of people (global)
+    counter = 0 #counts the number of people (global)
     
-    def __init__(self, home, work, idleTime, currentActivity,activities typicalTimes):
+    def __init__(self, home, work, idleTime, currentActivity, activities, typicalTimes):
         #list is a collection of individuals
         
-        type(self).__counter += 1
+        Individual.counter += 1
         
 
         
@@ -23,7 +23,7 @@ class Individual:
         self.currentActivity = currentActivity
     
     def __del__(self):
-        type(self).__counter -= 1  
+        Individual.counter -= 1  
         
     def update():
         

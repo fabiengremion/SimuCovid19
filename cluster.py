@@ -35,7 +35,7 @@ class Family(Cluster):
     def __init__(self, listOfIndividuals, district, parameters):
         #utile pour restreindre les parametres
         super().__init__(listOfIndividuals, district, parameters)
-        district.family.append(self)
+        district.families.append(self)
         
     def addHomeIndividual(self, listOfIndividuals):
         self.individuals.append(listOfIndividuals)
@@ -44,11 +44,11 @@ class Family(Cluster):
         
         
 class Work(Cluster):
-    def __init__(self, listOfIndividuals, district, parameters):
+    def __init__(self, listOfIndividuals, district, parameters, size):
         #utile pour restreindre les parametres
-        super(self, listOfIndividuals, district, parameters).__init__()
+        super().__init__(listOfIndividuals, district, parameters)
         district.work.append(self)
-        self.workingPlaces = workingPlaces
+        self.size = size
         
     def addEmployees(self,emps):
         for el in emps:
@@ -58,17 +58,17 @@ class Work(Cluster):
 class SuperMarket(Cluster):
     def __init__(self, listOfIndividuals, district, parameters):
         #utile pour restreindre les parametres
-        super(self, listOfIndividuals, district, parameters).__init__()
+        super().__init__(listOfIndividuals, district, parameters)
         district.superMarket.append(self)
         
 class PublicPlaces(Cluster):
     def __init__(self, listOfIndividuals, district, parameters):
         #utile pour restreindre les parametres
-        super(self, listOfIndividuals, district, parameters).__init__()
+        super().__init__(listOfIndividuals, district, parameters)
         district.publicPlaces.append(self)
         
         
 class Alone(Cluster):
     def __init__(self, list, parameters):
         #utile pour restreindre les parametres
-        super(self, list, parameters).__init__()
+        super().__init__(list, parameters)
