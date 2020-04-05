@@ -30,6 +30,8 @@ class Cluster:
             el.cluster = self
         self.new = empty()
         
+    def getMembersNumber(self):
+        return len(self.individuals)
 
 class Family(Cluster):
     def __init__(self, listOfIndividuals, district, parameters):
@@ -38,8 +40,8 @@ class Family(Cluster):
         district.families.append(self)
         
     def addHomeIndividual(self, listOfIndividuals):
-        self.individuals.append(listOfIndividuals)
         for el in listOfIndividuals:
+            self.individuals.append(el)
             el.home = self
         
         

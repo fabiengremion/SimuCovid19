@@ -39,7 +39,7 @@ class Map:
         #TODO, initialize people with datas
         #donner des ages aux personnes
         
-        self.defineWorkingPlaces(self.country, workingPlacesRatios, workingPlacesSizes, workPlacesParameters, mobilityDegrees)
+        '''self.defineWorkingPlaces(self.country, workingPlacesRatios, workingPlacesSizes, workPlacesParameters, mobilityDegrees)'''
         
         '''self.addPublics("SuperMarket", supermaketBypeople, SuperMarketParameters)
         self.addPublics("Public", supermaketBypeople, PublicPlacesParameters)'''
@@ -139,19 +139,18 @@ class Map:
         #N: number of work
         distances = [self.getClusterDistance(Work, ListOfCandidates[i].home) for i in range(len(ListOfCandidates))]
         weights = numpy.divide(1.0,distances)
-        probas = numpy.divide(weights, numpy.sum(weights))
+        probas = numpy.divide(weights, numpy.sum(weights))#to change
         indexesDisponible = numpy.arange(len(ListOfCandidates))
         chosenIndexes = []
         
-        '''for i in range(N):
-            for j in range(len(ListOfCandidates))
+        for i in range(N):
+            for j in range(len(ListOfCandidates)):
                 ind = numpy.random.choice(indexesDisponible,probas)
                 chosenIndexes.append(ind)
                 
                 indexesDisponible.pop(ind)
                 probas.pop(ind)
-                probas = numpy.divide(probas, numpy.sum(probas))'''
-        #TBD
+                probas = numpy.divide(probas, numpy.sum(probas))
         
         remainingCanditates = ListOfCandidates
         for index in sorted(chosenIndexes, reverse=True):
@@ -177,6 +176,38 @@ class Map:
     
     def update(self):
         self.country.update()
+        
+    def PlotMap(self):
+        strSpace = ' '*9
+        
+        iReg, iCit, iDist, iCL = 1,1,1,1
+        print("Country:")
+        for reg in self.country.regions:
+            print(strSpace + "R" + str(iReg) + ":")
+            for cit in reg.cities:
+                print(strSpace*2 + "C" + str(iCit) + ":")
+                for dist in cit.districts:
+                    print(strSpace*3 + "D" + str(iDist) + ":")
+                    iCL = 0
+                    for house in dist.families:
+                        print(strSpace*4 + "F" + str(iCL) + ": " + str(house.getMembersNumber()) )
+                        iCL += 1
+                    iCL = 0
+                    for work in dist.work:
+                        print(strSpace*4 + "W" + str(iCL) + ": " + str(work.getMembersNumber()) )
+                        iCL += 1
+                    iCL = 0
+                    for sM in dist.superMarkets:
+                        print(strSpace*4 + "SM" + str(iCL) + ": " + str(sM.getMembersNumber()) )
+                        iCL += 1
+                    iCL = 0
+                    for pP in dist.publicPlaces:
+                        print(strSpace*4 + "PP" + str(iCL) + ": " + str(pP.getMembersNumber()) )
+                        iCL += 1
+                    
+                    iDist +=1
+                iCit +=1
+            iReg +=1
     
     
 

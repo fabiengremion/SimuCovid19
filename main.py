@@ -23,4 +23,8 @@ workPlacesParameters = []
 mobilityDegrees = activities.mobilityDegrees
 
 
-map = Map(nbRegions, AvgCities, StdCities, AvgQuartiers, StdQuartiers, AvgFamily, StdFamily, minFamilySize, maxFamilySize, regionHoppingProbas, citiesHoppingProbas, districtHoppingProbas,clusterHoppingProbas, workingPlacesRatios, workingPlacesSizes, workPlacesParameters, supermaketBypeople, publicPlacesbypeople, mobilityDegrees)
+map = Map(nbRegions, AvgCities, StdCities, AvgQuartiers, StdQuartiers, AvgFamily, StdFamily, minFamilySize, maxFamilySize, 
+          regionHoppingProbas, citiesHoppingProbas, districtHoppingProbas, clusterHoppingProbas, 
+          workingPlacesRatios, workingPlacesSizes, workPlacesParameters, supermaketBypeople, publicPlacesbypeople, 
+          mobilityDegrees)
+map.PlotMap()
