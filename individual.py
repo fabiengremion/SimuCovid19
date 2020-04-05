@@ -2,28 +2,25 @@ import activities
 
 class Individual:
 
-    __counter = 0 #counts the number of people
+    __counter = 0 #counts the number of people (global)
     
-    def __init__(self, home, age, typeSocial, work, identity, idleTime, activity, typicalTimes):
+    def __init__(self, home, work, idleTime, currentActivity,activities typicalTimes):
         #list is a collection of individuals
-        self.cluster = cluster
         
         type(self).__counter += 1
         
-        self.age = age
-        self.typeSocial = typeSocial #par exemple adulte, enfant, grand-parent
+
         
         self.home = home #NB:cluster home/family la mm chose
         self.work = work #a cluster
-        self.identity = identity #a voir si c'est utile
         
-        self.activies = typeSocial.activities 
+        self.activies = activities 
             #ça nous permet de changer le comportement des individus
             #activities contient matrice de probas de passage d'une activité à une autre. Pour simplifier, on va commencer par des passages indépendants.
             #mm liste pour tout le  monde et proba diff.
         self.activitiesDurations = typicalTimes
         self.idleTime = idleTime #corresponds to the time (in units of update, before hopping)
-        self.currentActivity = activity
+        self.currentActivity = currentActivity
     
     def __del__(self):
         type(self).__counter -= 1  
@@ -43,7 +40,8 @@ class Individual:
         # l'activité determine ou non le cluster où on va aller.
         # tirer au sort le temps qu'il y restera.
         # appelle méthode add du cluster, modifie le paramètre cluster de l'individu, et le temps qu'il y reste.
-        
+    def setCurrentActivity(self, act):
+        self.currentActivity = act
     
     def chooseActivity():
         nextActivitiesProba = self.activities[currentActivity]

@@ -25,7 +25,7 @@ class Map:
                     FamilyTemp = [Family([],dis,[]) for i in range(nbfamilies)]
                     for fam in FamilyTemp:
                         nbpeople = numpy.random.randint(minFamilySize, maxFamilySize)
-                        members = [Individual([], [], [], [], [], [], [], []) for i in range(nbpeople)]
+                        members = [Individual(fam, None, None, fam, []) for i in range(nbpeople)] #give a family and set at home
                         fam.addHomeIndividual(members)
                         self.listOfPeople.append(members)
                     dis.addCluster(FamilyTemp)
