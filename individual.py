@@ -1,10 +1,10 @@
-import activities.py
+import activities
 
 class Individual:
 
     __counter = 0 #counts the number of people
     
-    def __init__(self, home, age, typeSocial, work, identity, idleTime, activity, typicalTimes=typicalTimes):
+    def __init__(self, home, age, typeSocial, work, identity, idleTime, activity, typicalTimes):
         #list is a collection of individuals
         self.cluster = cluster
         
@@ -71,7 +71,7 @@ class Individual:
     
     def choseInstance(activity, starting_cluster):
         #retrouver le pays et voilà tout le monde est content.
-        
+        pass
     #liste d'activités: home, work, school / shopping, visiting?, social
     
     
