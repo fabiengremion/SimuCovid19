@@ -1,6 +1,7 @@
 import numpy
 from cluster import *
 from individual import *
+from scipy.stats import rv_discrete
 
 
 class Map:
@@ -11,12 +12,13 @@ class Map:
         
         self.country = Country([], regionHoppingProbas)
         self.listOfPeople = []
+        self.familySizeGenerator = familySizeGenerator()
         
         #create sub structure of the country
-        regionsTemp  = [Region([],self.country, citiesHoppingProbas) for i in range(nbRegions)]
+        regionsTemp  = [Region([], self.country, citiesHoppingProbas) for i in range(nbRegions)]
         for reg in regionsTemp:
             nbcities = int(round(abs(numpy.random.normal(AvgCities, StdCities))))
-            citiesTemp = [City([],reg,districtHoppingProbas) for i in range(nbcities)]
+            citiesTemp = [City([] ,reg , districtHoppingProbas) for i in range(nbcities)]
             for cit in citiesTemp:
                 nbdistricts = int(round(abs(numpy.random.normal(AvgQuartiers, StdQuartiers))))
                 districtsTemp = [District([], [], [], [], cit, clusterHoppingProbas) for i in range(nbdistricts)]
@@ -25,19 +27,29 @@ class Map:
                     nbfamilies = int(round(abs(numpy.random.normal(AvgFamily, StdFamily))))
                     FamilyTemp = [Family([],dis,[]) for i in range(nbfamilies)]
                     for fam in FamilyTemp:
-                        nbpeople = numpy.random.randint(minFamilySize, maxFamilySize)
-                        members = [Individual(fam, None, None, fam, [], []) for i in range(nbpeople)] #give a family and set at home
+                        #nbpeople = numpy.random.randint(minFamilySize, maxFamilySize)
+                        nbpeople = self.familySizeGenerator.rvs(size=1)
+                        members = [Individual(fam, None, None, fam, [], []) for i in range(nbpeople)] # give a family and set at home
+                        #TODO:mettre d'abord des adultes et compléter avec des enfants
                         fam.addHomeIndividual(members)
+                        countmember = 1
                         for mem in members:
+                            if i<3:
+                                mem.age = ageGenerator("adult")
+                            if i>=3:
+                                mem.age = ageGenerator("kid")
                             self.listOfPeople.append(mem)
+                            countmember = countmember + 1
+
                     dis.addFamily(FamilyTemp)
                 cit.addDistrict(districtsTemp)
             reg.addCity(citiesTemp)
         self.country.addRegion(regionsTemp)
+
         #TODO put family parameters
         #TODO, choose family size distribution
         #TODO, initialize people with datas
-        #donner des ages aux personnes
+        #TODO, donner des ages aux personnes https://www.bfs.admin.ch/bfs/fr/home/statistiques/population/effectif-evolution/age-etat-civil-nationalite.html
         
         self.defineWorkingPlaces(self.country, workingPlacesRatios, workingPlacesSizes, workPlacesParameters, mobilityDegrees)
         
@@ -53,14 +65,14 @@ class Map:
                 for dis in districtsTemp:
                     number = int(density*dis.getNumberOfPeople())
                     if type == "SuperMarket" :
-                        SM = [SuperMarket([],dis,PublicPlacesParameters) for i in range(number)]
+                        SM = [SuperMarket([] ,dis ,PublicPlacesParameters) for i in range(number)]
                     elif type == "PublicPlace":
-                        PP = [PublicPlaces([],dis,PublicPlacesParameters) for i in range(number)]
+                        PP = [PublicPlaces([] ,dis ,PublicPlacesParameters) for i in range(number)]
                     
         
         
         
-    def defineWorkingPlaces(self, country, ratios, sizes, parameters,mobilityDegrees):
+    def defineWorkingPlaces(self, country, ratios, sizes, parameters, mobilityDegrees):
         #define 4 levels of working places, with different sizes (s1-s4)
         #with different ratio of population that can find a place in theses working places
         # level 1: r1 fraction of the population of the country have job here, the size is ~s1, check here how many of these we need. 
@@ -276,6 +288,21 @@ class District:
         for fam in self.family:
             counter += len(fam.individuals)
     
-        
-        
-# s'imaginer à un output.      
+
+def familySizeGenerator():
+    # from https: // www.bfs.admin.ch / bfs / fr / home / statistiques / population / effectif - evolution / menages.html
+    # We imagine that families are either composed of one adult or 2 adults or 2 adults + 3 kids. We ignore bigger families and adults flatsharing
+    familySize = numpy.arange(6)
+    familySizeProba = numpy.array([0, 0.36, 0.33, 0.13, 0.13, 0.6])
+    familySizeGenerator = rv_discrete(name='familySizeGenerator', values=(familySize, familySizeProba))
+
+    return familySizeGenerator
+
+def ageGenerator(type):
+    # a continuer
+    # from https://www.bfs.admin.ch/bfs/fr/home/statistiques/population/effectif-evolution/age-etat-civil-nationalite.html# We imagine that families are either composed of one adult or 2 adults or 2 adults + 3 kids. We ignore bigger families and adults flatsharing
+    if type == "adult":
+        return familySize = numpy.arange(6)
+    return age
+
+# s'imaginer à un output
