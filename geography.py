@@ -29,16 +29,16 @@ class Map:
                     FamilyTemp = [Family([],dis,[]) for i in range(nbfamilies)]
                     for fam in FamilyTemp:
                         #nbpeople = numpy.random.randint(minFamilySize, maxFamilySize)
-                        nbpeople = self.familySizeGenerator.rvs(size=1)
-                        members = [Individual(fam, None, None, fam, [], []) for i in range(nbpeople)] # give a family and set at home
+                        nbpeople = int(self.familySizeGenerator.rvs(size=1))
+                        members = [Individual(fam, None, None, fam, [], [], age = None) for i in range(nbpeople)] # give a family and set at home
                         #TODO:mettre d'abord des adultes et compléter avec des enfants
                         fam.addHomeIndividual(members)
                         countmember = 1
                         for mem in members:
-                            if i<3:
-                                ageCategory = self.adultAgeCategoryGenerator()
+                            if countmember<3:
+                                ageCategory = int(self.adultAgeCategoryGenerator.rvs(size=1))
                                 mem.age = numpy.random.randint(*self.adultAgeCategoryBoundaries[ageCategory]) #the little star unpacks the tuple
-                            if i>=3:
+                            if countmember>=3:
                                 mem.age = numpy.random.randint(1, 19)
                             self.listOfPeople.append(mem)
                             countmember = countmember + 1
