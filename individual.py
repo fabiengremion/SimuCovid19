@@ -4,7 +4,7 @@ class Individual:
 
     counter = 0 #counts the number of people (global)
     
-    def __init__(self, home, work, idleTime, currentActivity, activities, typicalTimes):
+    def __init__(self, home, work, idleTime, currentActivity, activities, typicalTimes, age):
         #list is a collection of individuals
         
         Individual.counter += 1
@@ -21,6 +21,7 @@ class Individual:
         self.activitiesDurations = typicalTimes
         self.idleTime = idleTime #corresponds to the time (in units of update, before hopping)
         self.currentActivity = currentActivity
+        self.age = age
     
     def __del__(self):
         Individual.counter -= 1  
@@ -40,6 +41,7 @@ class Individual:
         # l'activité determine ou non le cluster où on va aller.
         # tirer au sort le temps qu'il y restera.
         # appelle méthode add du cluster, modifie le paramètre cluster de l'individu, et le temps qu'il y reste.
+
     def setCurrentActivity(self, act):
         self.currentActivity = act
     
@@ -54,7 +56,7 @@ class Individual:
         return activity, time
         
     def chooseCluster(activity):
-        #ici ça se corse...
+
         if activity == family:
             cluster = self.home
             
@@ -70,6 +72,8 @@ class Individual:
     def choseInstance(activity, starting_cluster):
         #retrouver le pays et voilà tout le monde est content.
         pass
+
+
     #liste d'activités: home, work, school / shopping, visiting?, social
     
     
