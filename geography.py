@@ -2,9 +2,10 @@ import numpy
 from cluster import *
 from individual import *
 
+
 class Map:
 
-    def __init__(self, nbRegions, AvgCities, StdCities, AvgQuartiers, StdQuartiers, AvgFamily, StdFamily, minFamilySize, maxFamilySize, regionHoppingProbas, citiesHoppingProbas, districtHoppingProbas, clusterHoppingProbas,workingPlacesRatios, workingPlacesSizes, workPlacesParameters, supermaketBypeople, publicPlacesbypeople):
+    def __init__(self, nbRegions, AvgCities, StdCities, AvgQuartiers, StdQuartiers, AvgFamily, StdFamily, minFamilySize, maxFamilySize, regionHoppingProbas, citiesHoppingProbas, districtHoppingProbas, clusterHoppingProbas,workingPlacesRatios, workingPlacesSizes, workPlacesParameters, supermaketBypeople, publicPlacesbypeople, mobilityDegrees):
         
         self.nbRegions = nbRegions
         
@@ -38,7 +39,7 @@ class Map:
         #TODO, initialize people with datas
         #donner des ages aux personnes
         
-        self.defineWorkingPlaces(self.country, workingPlacesRatios, workingPlacesSizes, workPlacesParameters)
+        self.defineWorkingPlaces(self.country, workingPlacesRatios, workingPlacesSizes, workPlacesParameters, mobilityDegrees)
         
         '''self.addPublics("SuperMarket", supermaketBypeople, SuperMarketParameters)
         self.addPublics("Public", supermaketBypeople, PublicPlacesParameters)'''
@@ -59,7 +60,7 @@ class Map:
         
         
         
-    def defineWorkingPlaces(self, country, ratios, sizes, parameters):
+    def defineWorkingPlaces(self, country, ratios, sizes, parameters,mobilityDegrees):
         #define 4 levels of working places, with different sizes (s1-s4)
         #with different ratio of population that can find a place in theses working places
         # level 1: r1 fraction of the population of the country have job here, the size is ~s1, check here how many of these we need. 
@@ -70,13 +71,14 @@ class Map:
         nbPopulation = Individual.counter
         listOfPeopleTemp = self.listOfPeople
         remainingPlaces = nbPopulation #counter
+        workMobilityDegrees = mobilityDegrees['work']
         #1 
         N1 = int(round(nbPopulation*ratios['r1']/sizes['s1'])) #number of groups in category 1
         Size1 = int(round(nbPopulation*ratios['r1']/N1))
         for i in range(N1):
             District = self.chooseDistrict()
             work = Work([],District,parameters, Size1)
-            emps, listOfPeopleTemp = self.chooseEmployee(work, Size1, listOfPeopleTemp)
+            emps, listOfPeopleTemp = self.chooseEmployee(work, Size1, listOfPeopleTemp,workMobilityDegrees)
             work.addEmployees(emps)
         remainingPlaces -= N1*S1
         
@@ -86,7 +88,7 @@ class Map:
         for i in range(N2):
             work = Work([],District,parameters, Size2)
             District.addCluster(work)
-            emps, listOfPeopleTemp = self.chooseEmployee(work, Size2, listOfPeopleTemp)
+            emps, listOfPeopleTemp = self.chooseEmployee(work, Size2, listOfPeopleTemp,workMobilityDegrees)
             work.addEmployees(emps)
         remainingPlaces -= N2*S2
         
@@ -96,7 +98,7 @@ class Map:
         for i in range(N3):
             work = Work([],District,parameters, Size3)
             District.addCluster(work)
-            emps, listOfPeopleTemp = self.chooseEmployee(work, Size3, listOfPeopleTemp)
+            emps, listOfPeopleTemp = self.chooseEmployee(work, Size3, listOfPeopleTemp,workMobilityDegrees)
             work.addEmployees(emps)
         remainingPlaces -= N3*S3
         
@@ -106,14 +108,14 @@ class Map:
         for i in range(N4):
             work = Work([],District,parameters, Size4)
             District.addCluster(work)
-            emps, listOfPeopleTemp = self.chooseEmployee(work, Size4, listOfPeopleTemp)
+            emps, listOfPeopleTemp = self.chooseEmployee(work, Size4, listOfPeopleTemp,workMobilityDegrees)
             work.addEmployees(emps)
         remainingPlaces -= N4*S4
         #for remainning nbpeople
         District = chooseDistrict()
         work = Work([],District,parameters, remainingPlaces)
         District.addCluster(work)
-        emps, listOfPeopleTemp = self.chooseEmployee(work, remainingPlaces, listOfPeopleTemp)
+        emps, listOfPeopleTemp = self.chooseEmployee(work, remainingPlaces, listOfPeopleTemp,workMobilityDegrees)
         work.addEmployees(emps)
         
     
