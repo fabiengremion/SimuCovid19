@@ -10,8 +10,8 @@ class Cluster:
             #proba d'y venir (0 si closed)
         
         self.district = district
-        self.ID = counter
-        counter = counter + 1
+        self.ID = Cluster.counter
+        counter = Cluster.counter + 1
         #position est un quartier qui appartient à une ville qui appartient à la Suisse.
         
         

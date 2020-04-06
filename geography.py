@@ -30,7 +30,7 @@ class Map:
                     for fam in FamilyTemp:
                         #nbpeople = numpy.random.randint(minFamilySize, maxFamilySize)
                         nbpeople = int(self.familySizeGenerator.rvs(size=1))
-                        members = [Individual(fam, None, None, fam, [], [], age = None) for i in range(nbpeople)] # give a family and set at home
+                        members = [Individual(fam, None, None, fam, [], [], age = None, cluster = None) for i in range(nbpeople)] # give a family and set at home
                         #TODO:mettre d'abord des adultes et compléter avec des enfants
                         fam.addHomeIndividual(members)
                         countmember = 1
@@ -225,12 +225,14 @@ class Map:
     
 
 class Country:
+
     counter = 0
+
     def __init__(self, regions, hopping_probas):
         self.regions = regions
         self.hopping_probas = hopping_probas
-        self.ID = counter
-        counter = counter + 1
+        self.ID = Country.counter
+        Country.counter = Country.counter + 1
         
     def addRegion(self, listofRegion):
         for el in listofRegion:
@@ -256,8 +258,8 @@ class Region:
         self.cities = cities
         self.country = country
         self.hopping_probas = hopping_probas
-        self.ID = counter
-        counter = counter + 1
+        self.ID = Region.counter
+        Region.counter = Region.counter + 1
         
     def addCity(self, listofCities):
         for el in listofCities:
@@ -283,8 +285,8 @@ class City:
         self.districts = districts
         self.region = region        
         self.hopping_probas = hopping_probas
-        self.ID = counter
-        counter = counter + 1
+        self.ID = City.counter
+        City.counter = City.counter + 1
     
     def addDistrict(self, listofDistricts):
         for el in listofDistricts:
@@ -314,8 +316,8 @@ class District:
         
         self.city = city
         self.hopping_probas = hopping_probas #est-ce vraiment utile ?
-        self.ID = counter
-        counter = counter + 1
+        self.ID = District.counter
+        District.counter = District.counter + 1
 
     def addFamily(self, listOfFamilies):
         for el in listOfFamilies:
@@ -363,5 +365,3 @@ def adultAgeCategoryGenerator():
     ageCategoryGenerator = rv_discrete(name='ageCategoryGenerator', values=(ageCategory, ageCategoryProba))
 
     return ageCategoryGenerator, categoryBoundaries
-
-# s'imaginer à un output
