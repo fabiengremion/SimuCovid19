@@ -225,9 +225,12 @@ class Map:
     
 
 class Country:
+    counter = 0
     def __init__(self, regions, hopping_probas):
         self.regions = regions
         self.hopping_probas = hopping_probas
+        self.ID = counter
+        counter = counter + 1
         
     def addRegion(self, listofRegion):
         for el in listofRegion:
@@ -248,10 +251,13 @@ class Country:
     
     
 class Region:
+    counter = 0
     def __init__(self, cities, country, hopping_probas):
         self.cities = cities
         self.country = country
         self.hopping_probas = hopping_probas
+        self.ID = counter
+        counter = counter + 1
         
     def addCity(self, listofCities):
         for el in listofCities:
@@ -272,10 +278,13 @@ class Region:
         
         
 class City:
+    counter = 0
     def __init__(self, districts, region, hopping_probas):
         self.districts = districts
         self.region = region        
         self.hopping_probas = hopping_probas
+        self.ID = counter
+        counter = counter + 1
     
     def addDistrict(self, listofDistricts):
         for el in listofDistricts:
@@ -296,6 +305,7 @@ class City:
 
         
 class District:
+    counter = 0
     def __init__(self, families, work, superMarkets, puplicPlaces, city, hopping_probas):
         self.families = families
         self.work = work
@@ -304,6 +314,8 @@ class District:
         
         self.city = city
         self.hopping_probas = hopping_probas #est-ce vraiment utile ?
+        self.ID = counter
+        counter = counter + 1
 
     def addFamily(self, listOfFamilies):
         for el in listOfFamilies:
@@ -319,7 +331,17 @@ class District:
         counter = 0
         for fam in self.family:
             counter += len(fam.individuals)
-    
+
+    def getaCluster(self, activity):
+        if activity == 'shopping':
+            nbsuperMarkets = len(self.superMarkets)
+            index = numpy.random.randint(0, nbsuperMarkets - 1)
+            return self.superMarkets[index]
+
+        if activity == 'social':
+            nbpublicPlaces = len(self.publicPlaces)
+            index = numpy.random.randint(0, nbpublicPlaces - 1)
+            return self.publicPlaces[index]
 
 def familySizeGenerator():
     # from https: // www.bfs.admin.ch / bfs / fr / home / statistiques / population / effectif - evolution / menages.html

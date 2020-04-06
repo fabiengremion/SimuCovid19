@@ -71,9 +71,9 @@ class Individual:
             if distance == 1:
                 cluster = self.currentCluster.District.City.getaDistrict.getaCluster(activity)
             if distance == 2:
-                cluster = self.currentCluster.District.City.Region.getaCity.getaCluster(activity)
+                cluster = self.currentCluster.District.City.Region.getaCity.getaDistrict.getgetaCluster(activity)
             if distance == 3:
-                cluster = self.currentCluster.District.City.Region.Country.getaRegion.getaCluster(activity)
+                cluster = self.currentCluster.District.City.Region.Country.getaRegion.getaCity.getaDistrict.getgetaCluster(activity)
 
         self.currentCluster = cluster
 
