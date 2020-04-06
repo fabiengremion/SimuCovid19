@@ -1,10 +1,10 @@
-import activities
+from activities import *
 
 class Individual:
 
     counter = 0 #counts the number of people (global)
     
-    def __init__(self, home, work, idleTime, currentActivity, activities, typicalTimes, age):
+    def __init__(self, home, work, idleTime, currentActivity, activities, typicalTimes, age, cluster):
         #list is a collection of individuals
         
         Individual.counter += 1
@@ -22,6 +22,7 @@ class Individual:
         self.idleTime = idleTime #corresponds to the time (in units of update, before hopping)
         self.currentActivity = currentActivity
         self.age = age
+        self.currentCluster = cluster #TODO: put current cluster ON!
     
     def __del__(self):
         Individual.counter -= 1  
@@ -45,7 +46,7 @@ class Individual:
     def setCurrentActivity(self, act):
         self.currentActivity = act
     
-    def chooseActivity():
+    def chooseActivity(self):
         nextActivitiesProba = self.activities[currentActivity]
         # https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.rv_discrete.html
         ActivityIndices = np.arange(nextActivitiesProba.size())
@@ -55,7 +56,7 @@ class Individual:
             # TO DO: ajouter de la variabilité par rapport au temps typique ? Nécessaire ?
         return activity, time
         
-    def chooseCluster(activity):
+    def chooseCluster(self, activity):
 
         if activity == family:
             cluster = self.home
@@ -64,16 +65,19 @@ class Individual:
             cluster = self.work
         
         else:
-            cluster = movingRadius(activity)
-        
-        cluster.new = self
-        self.cluster = cluster
-    
-    def choseInstance(activity, starting_cluster):
-        #retrouver le pays et voilà tout le monde est content.
-        pass
+            distance = sampleDistanceGenerator(activity).rvs(size=1)
+            if distance == 0:
+                cluster = self.currentCluster.District.getaCluster(activity)
+            if distance == 1:
+                cluster = self.currentCluster.District.City.getaDistrict.getaCluster(activity)
+            if distance == 2:
+                cluster = self.currentCluster.District.City.Region.getaCity.getaCluster(activity)
+            if distance == 3:
+                cluster = self.currentCluster.District.City.Region.Country.getaRegion.getaCluster(activity)
+
+        self.currentCluster = cluster
 
 
-    #liste d'activités: home, work, school / shopping, visiting?, social
-    
-    
+    def print(self):
+        print('Activity:{}     ClusterID:{}    DistrictID:{}     CityID:{}     RegionID:{}    CountryID:{}'.format(self.currentActivity, *self.currentCluster.location()))
+        print(self.currentActivity)

@@ -1,5 +1,7 @@
 class Cluster:
 
+    counter = 0
+
     def __init__(self, listOfIndividuals, district, parameters):
         #list is a collection of individuals
         self.individuals = listOfIndividuals
@@ -8,12 +10,14 @@ class Cluster:
             #proba d'y venir (0 si closed)
         
         self.district = district
+        self.ID = counter
+        counter = counter + 1
         #position est un quartier qui appartient à une ville qui appartient à la Suisse.
         
         
         #Dans paramètres, ajouter un nombre moyen de personnes
         
-    def update():
+    def update(self):
         
         #simule le spreading
 
@@ -23,7 +27,7 @@ class Cluster:
             el.update()
             #dans la méthode update éventuellement un individu sera mis dans la liste "new"
             
-    def flush():
+    def flush(self):
         
         self.individuals.append(self.new)
         for el in self.new:
@@ -32,6 +36,11 @@ class Cluster:
         
     def getMembersNumber(self):
         return len(self.individuals)
+
+    def location(self):
+        return (self.ID, self.District.ID, self.District.Region.ID, self.District.Region.Country.ID)
+
+
 
 class Family(Cluster):
     def __init__(self, listOfIndividuals, district, parameters):
